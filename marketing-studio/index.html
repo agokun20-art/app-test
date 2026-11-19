@@ -39,6 +39,7 @@
       <nav aria-label="Workspace">
         <p class="eyebrow nav-label">Workspace</p>
         <a href="#campaigns" data-page="campaigns" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#grid"/></svg>Campaigns</a>
+        <a href="#calendar" data-page="calendar"><svg class="icon" aria-hidden="true"><use href="#clock"/></svg>Calendar</a>
         <a href="#links" data-page="links"><svg class="icon" aria-hidden="true"><use href="#link"/></svg>Link builder</a>
         <a href="#brand" data-page="brand"><svg class="icon" aria-hidden="true"><use href="#book"/></svg>Brand guide</a>
       </nav>
@@ -62,6 +63,7 @@
               <button type="button" class="button primary" data-new><svg class="icon" aria-hidden="true"><use href="#plus"/></svg>New campaign</button>
             </div>
           </header>
+          <p class="mobile-local"><svg class="icon" aria-hidden="true"><use href="#monitor"/></svg>Drafts stay in this browser and don’t sync.</p>
           <div class="stats" aria-label="Campaign counts">
             <div class="stat"><div><p>Total campaigns</p><strong id="count-total">—</strong></div><span class="icon-box"><svg class="icon" aria-hidden="true"><use href="#file"/></svg></span></div>
             <div class="stat"><div><p>In review</p><strong id="count-review">—</strong></div><span class="icon-box review"><svg class="icon" aria-hidden="true"><use href="#clock"/></svg></span></div>
@@ -81,36 +83,98 @@
               </div>
               <div id="campaign-list" class="campaign-list"></div>
               <div class="panel-footer" id="list-summary" role="status"></div>
+              <details id="examples" class="examples">
+                <summary>Example campaigns <span>Try a prefilled brief</span></summary>
+                <div id="example-list" class="campaign-list"></div>
+              </details>
             </section>
-            <section class="panel toolkit" aria-labelledby="toolkit-heading">
+            <div class="toolkit-column">
+              <section class="panel toolkit" aria-labelledby="toolkit-heading">
               <div class="panel-header"><h2 id="toolkit-heading">Marketing toolkit</h2><p>Handy when you’re ready to ship.</p></div>
               <a class="tool" href="#links"><span class="icon-box ready"><svg class="icon" aria-hidden="true"><use href="#link"/></svg></span><span><strong>Build a tracking link</strong><small>Add UTM tags to a URL.</small></span><svg class="icon tool-arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
               <a class="tool" href="#brand"><span class="icon-box"><svg class="icon" aria-hidden="true"><use href="#book"/></svg></span><span><strong>See the brand guide</strong><small>Flow messaging and voice.</small></span><svg class="icon tool-arrow" aria-hidden="true"><use href="#arrow"/></svg></a>
-            </section>
+              </section>
+              <section class="panel field-panel backup-panel" aria-labelledby="backup-heading">
+                <h2 id="backup-heading">Workspace backup</h2>
+                <p class="muted">Export campaigns and saved links before clearing site data or switching browsers. Media files stay in this browser and are not in the backup.</p>
+                <div class="actions">
+                  <button type="button" class="button secondary" id="export-backup">Export backup</button>
+                  <button type="button" class="button secondary" id="import-backup">Import backup</button>
+                </div>
+                <input type="file" id="backup-file" accept=".json,application/json" hidden>
+                <p id="backup-status" class="muted" role="status" hidden></p>
+                <p id="backup-error" class="form-error" role="alert" hidden></p>
+              </section>
+            </div>
           </div>
+        </section>
+        <section id="page-calendar" hidden aria-labelledby="calendar-heading">
+          <header class="hero secondary-hero"><div class="hero-content"><p class="eyebrow hero-eyebrow"><span></span> Social planning</p><h1 id="calendar-heading">Social calendar</h1><p>Plan a week across platforms. The studio doesn’t publish posts.</p></div></header>
+          <section class="panel field-panel" aria-labelledby="week-heading">
+            <div class="week-header">
+              <div><h2 id="week-heading"></h2><p class="muted">Monday–Sunday, in each post’s local time.</p></div>
+              <div class="actions">
+                <button type="button" class="button secondary" id="previous-week">Previous week</button>
+                <button type="button" class="button secondary" id="current-week">This week</button>
+                <button type="button" class="button secondary" id="next-week">Next week</button>
+              </div>
+            </div>
+            <div class="actions">
+              <button type="button" id="new-post" class="button primary">Plan a post</button>
+              <button type="button" id="export-week" class="button secondary" disabled>Export week CSV</button>
+              <label>Jump to week<input type="date" id="jump-week" min="2000-01-01" max="2099-12-31"></label>
+            </div>
+            <div id="calendar-week" class="calendar-week"></div>
+            <p id="week-summary" class="muted hint" role="status"></p>
+          </section>
         </section>
         <section id="page-links" hidden aria-labelledby="links-heading">
           <header class="hero secondary-hero"><div class="hero-content"><p class="eyebrow hero-eyebrow"><span></span> Marketing toolkit</p><h1 id="links-heading">Link builder</h1><p>Tag a destination with UTM parameters so you can identify campaign traffic in your analytics.</p></div></header>
           <div class="tool-layout">
             <form id="link-form" class="panel field-panel">
               <h2>Campaign details</h2>
-              <label>Destination URL<input name="destination" type="url" required placeholder="https://example.com/landing"></label>
+              <label for="link-association">Save link to <span class="optional">Optional</span></label>
+              <select id="link-association" aria-label="Save link to"></select>
+              <label>Destination URL<input name="destination" type="url" aria-describedby="destination-hint" required placeholder="https://flowapp.daily/"></label>
+              <p id="destination-hint" class="muted hint field-hint">Start with https:// or http://. Use a destination you’ve verified.</p>
+              <button type="button" class="button secondary small" id="use-flow-url">Use configured Flow URL</button>
+              <p id="destination-warning" class="callout" role="status" hidden></p>
               <div class="field-grid">
                 <label>Source<input name="source" required maxlength="100" placeholder="e.g. newsletter"></label>
                 <label>Medium<input name="medium" required maxlength="100" placeholder="e.g. email"></label>
               </div>
               <label>Campaign<input name="campaign" required maxlength="120" placeholder="e.g. morning-reset"></label>
-              <label>Content <span class="optional">Optional</span><input name="content" maxlength="120" placeholder="e.g. header-button"></label>
+              <p class="muted hint field-hint">Source and medium use lowercase. Campaign names use lowercase and hyphens.</p>
+              <div class="field-grid">
+                <label>Content <span class="optional">Optional</span><input name="content" maxlength="120" placeholder="e.g. header-button"></label>
+                <label>Term <span class="optional">Optional</span><input name="term" maxlength="120" placeholder="e.g. morning routine"></label>
+              </div>
+              <p class="muted hint field-hint">Leave Content or Term blank to keep its first existing non-empty value.</p>
               <button type="submit" class="button primary"><svg class="icon" aria-hidden="true"><use href="#link"/></svg>Generate link</button>
               <p id="link-error" class="form-error" role="alert" hidden></p>
             </form>
-            <section class="panel field-panel" aria-labelledby="tracking-heading">
+            <section class="panel field-panel" id="tracking-result" aria-labelledby="tracking-heading">
               <h2 id="tracking-heading">Tracking link</h2>
-              <p class="muted">Existing query parameters stay in place; matching UTM tags are replaced.</p>
+              <p class="muted">Unrelated query parameters stay in place. Save the link to keep it in history.</p>
               <label>Generated URL<textarea id="tracking-url" rows="4" readonly placeholder="Your link will appear here."></textarea></label>
-              <button type="button" id="copy-link" class="button secondary" disabled><svg class="icon" aria-hidden="true"><use href="#copy"/></svg>Copy link</button>
+              <div class="actions">
+                <button type="button" id="copy-link" class="button secondary" disabled><svg class="icon" aria-hidden="true"><use href="#copy"/></svg>Copy link</button>
+                <button type="button" id="save-link" class="button primary" disabled>Save link</button>
+              </div>
+              <p id="tracking-notice" role="status" class="muted" hidden></p>
+              <p id="tracking-error" role="alert" class="form-error" hidden></p>
             </section>
           </div>
+          <section class="panel field-panel link-history" aria-labelledby="link-history-heading">
+            <h2 id="link-history-heading">Link history</h2>
+            <p class="muted">Saved in this browser. Search by campaign or URL and export the matching links.</p>
+            <div class="actions history-filters">
+              <label class="search-field"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><span class="sr-only">Search saved links</span><input id="search-links" type="search" placeholder="Search saved links…"></label>
+              <button type="button" class="button secondary" id="export-links" disabled>Export CSV</button>
+            </div>
+            <div id="history-list" class="history-list"></div>
+            <p id="history-summary" class="muted hint" role="status"></p>
+          </section>
         </section>
         <section id="page-brand" hidden aria-labelledby="brand-heading">
           <header class="hero secondary-hero"><div class="hero-content"><p class="eyebrow hero-eyebrow"><span></span> Marketing toolkit</p><h1 id="brand-heading">Brand guide</h1><p>What Flow does, how it sounds, and which claims to leave out.</p></div></header>
@@ -127,6 +191,17 @@
               <blockquote>“Start with one thing that matters today. Flow helps you make room for it.”</blockquote>
             </article>
           </div>
+          <article class="panel field-panel product-facts" aria-labelledby="product-facts-heading">
+            <h2 id="product-facts-heading">Product facts you can use</h2>
+            <p class="muted">Names and behavior from the Flow app. Confirm release plans and availability before making launch claims.</p>
+            <dl class="fact-list">
+              <div><dt><a href="https://github.com/agokun20-art/app-test/blob/main/frontend/src/components/NorthStarCard.tsx">North Star</a></dt><dd>Choose one priority that would make today count.</dd></div>
+              <div><dt><a href="https://github.com/agokun20-art/app-test/blob/main/frontend/app/rituals.tsx">Rituals</a></dt><dd>Create recurring rituals and check them off as you go.</dd></div>
+              <div><dt><a href="https://github.com/agokun20-art/app-test/blob/main/frontend/app/(tabs)/flow.tsx">Time, Money, and Health</a></dt><dd>Start a focus session, log an expense, or track glasses of water from the Flow tab.</dd></div>
+              <div><dt><a href="https://github.com/agokun20-art/app-test/blob/main/frontend/app/insights.tsx">Your 7 days · Tell my week</a></dt><dd>Request an in-app recap of focus time, water, priorities completed, and spending. The repo does not show a Sunday delivery or use the name “Weekly Brief.”</dd></div>
+              <div><dt><a href="https://github.com/agokun20-art/app-test/blob/main/frontend/app/journal.tsx">Journal</a></dt><dd>Write and revisit entries, with a short reflection from Flow.</dd></div>
+            </dl>
+          </article>
         </section>
         <noscript><p class="form-error">Enable JavaScript to edit campaigns and generate tracking links.</p></noscript>
       </div>
@@ -135,10 +210,12 @@
   <dialog id="campaign-dialog" aria-labelledby="dialog-heading">
     <form id="campaign-form">
       <header class="dialog-header"><div><p class="eyebrow">Campaign brief</p><h2 id="dialog-heading">New campaign</h2></div><button class="icon-button" id="close-dialog" type="button" aria-label="Close campaign editor"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></header>
+      <p class="form-error editor-error" id="campaign-error" role="alert" hidden></p>
       <div class="dialog-body">
+        <p class="muted hint" id="shared-brief-note" hidden></p>
         <label>Campaign name<input name="title" required maxlength="100" placeholder="Give this campaign a name" autofocus></label>
         <div class="field-grid">
-          <label>Channel<select name="channel"><option>Email</option><option>Social</option><option>Landing page</option></select></label>
+          <label>Channel<select name="channel"><option>Email</option><option>Landing page</option><optgroup label="Social"><option>X</option><option>Instagram</option><option>LinkedIn</option><option>TikTok</option><option>Social</option></optgroup></select></label>
           <label>Status<select name="status"><option>Draft</option><option>In review</option><option>Ready</option></select></label>
         </div>
         <label>Objective<input name="objective" maxlength="180" placeholder="What should this campaign achieve?"></label>
@@ -147,10 +224,47 @@
           <label>Call to action<input name="cta" maxlength="100" placeholder="e.g. Try Flow"></label>
         </div>
         <label>Key message<textarea name="message" maxlength="400" rows="2" placeholder="One idea the reader should take away."></textarea></label>
+        <label>Destination URL <span class="optional">Optional</span><input type="url" name="destination" placeholder="https://"></label>
+        <fieldset class="schedule-fields" id="social-schedule" hidden>
+          <legend>Social schedule <span class="optional">Optional</span></legend>
+          <div class="field-grid">
+            <label>Post date<input type="date" name="publishDate" min="2000-01-01" max="2099-12-31"></label>
+            <label>Post time<input type="time" name="publishTime"></label>
+          </div>
+          <label>Time zone<input name="timeZone" list="time-zones" placeholder="e.g. Europe/London"></label>
+          <datalist id="time-zones"></datalist>
+        </fieldset>
+        <div class="actions">
+          <button type="button" id="copy-brief" class="button secondary small">Copy brief</button>
+          <button type="button" id="campaign-link" class="button secondary small" hidden>Build tracking link</button>
+          <button type="button" id="duplicate-campaign" class="button secondary small" hidden>Create variant</button>
+        </div>
+        <label id="brief-output-label" hidden>Campaign brief<textarea id="brief-output" rows="6" readonly></textarea></label>
+        <label id="saved-link-field" hidden>Saved tracking link<textarea id="saved-campaign-link" rows="2" readonly></textarea></label>
         <div class="draft-heading"><label for="draft">Channel draft</label><button type="button" id="insert-template" class="button secondary small">Insert copy template</button></div>
-        <textarea id="draft" name="draft" maxlength="8000" rows="7" placeholder="Draft your copy here or insert a starter template."></textarea>
-        <p class="muted hint">Templates start an empty draft and never overwrite your copy.</p>
-        <p class="form-error" id="campaign-error" role="alert" hidden></p>
+        <textarea id="draft" name="draft" rows="7" aria-describedby="draft-length draft-limit" placeholder="Draft your copy here or insert a starter template."></textarea>
+        <p class="muted hint" id="draft-length"></p>
+        <p class="form-error hint" id="draft-limit" role="status" hidden></p>
+        <p class="muted hint" id="draft-context" hidden></p>
+        <p class="muted hint">Templates use the name, message, and CTA. Review any placeholders before sharing.</p>
+        <details class="email-preview" id="email-preview" hidden>
+          <summary>Preview email</summary>
+          <div id="email-preview-content"></div>
+        </details>
+        <section class="schedule-fields" id="social-media" aria-labelledby="media-heading" hidden>
+          <h3 id="media-heading">Draft media</h3>
+          <p class="muted hint" id="media-hint"></p>
+          <label id="media-input-label" hidden>Add images or video<input id="media-input" type="file" accept="image/jpeg,image/png,image/webp,image/gif,video/mp4,video/webm,video/quicktime" multiple></label>
+          <p id="media-error" class="form-error hint" role="status" hidden></p>
+          <details class="email-preview" id="social-preview">
+            <summary id="social-preview-label">Preview post</summary>
+            <div class="social-preview-card">
+              <strong id="preview-platform"></strong>
+              <p id="preview-caption"></p>
+              <div id="media-preview" class="media-preview"></div>
+            </div>
+          </details>
+        </section>
       </div>
       <footer class="dialog-footer">
         <button type="button" id="delete-campaign" class="button danger" hidden>Delete</button>
