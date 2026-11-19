@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 620 262" fill="none">
+  <defs>
+    <path id="current" d="M-60 256C35 279 82 226 140 184s102-6 149 15 95 33 147-12S499 52 562 56s67 69 119 71"/>
+  </defs>
+  <g stroke="#2bbda5" stroke-opacity=".31">
+    <use href="#current" y="-182"/><use href="#current" y="-166"/><use href="#current" y="-150"/><use href="#current" y="-134"/><use href="#current" y="-118"/>
+    <use href="#current" y="-102"/><use href="#current" y="-86"/><use href="#current" y="-70"/><use href="#current" y="-54"/><use href="#current" y="-38"/>
+    <use href="#current" y="-22"/><use href="#current" y="-6"/><use href="#current" y="10"/><use href="#current" y="26"/><use href="#current" y="42"/>
+    <use href="#current" y="58"/><use href="#current" y="74"/><use href="#current" y="90"/><use href="#current" y="106"/>
+  </g>
+</svg>
